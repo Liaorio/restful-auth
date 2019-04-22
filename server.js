@@ -9,7 +9,7 @@ var config = require('./config');
 var User   = require('./models/user');
 
 var port = process.env.PORT || 8080;
-mongoose.connect(config.database);
+mongoose.connect(config.database, { useNewUrlParser: true });
 app.set('superSecret', config.secret);
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -61,6 +61,7 @@ apiRoutes.post('/authenticate', function(req, res) {
 });
 
 apiRoutes.use(function(req, res, next) {
+    console.log(req.headers);
     let token = req.body.token || req.query.token || req.headers['x-access-token'];
     if (token) { 
         jwt.verify(
