@@ -1,10 +1,9 @@
-var express = require('express'),
-    app = express(),
-    session = require('express-session');
+var express = require('express');
+var app = express();
+var session = require('express-session');
 
 
 var bodyParser  = require('body-parser');
-var morgan      = require('morgan');
 var mongoose    = require('mongoose');
 
 var config = require('./config');
