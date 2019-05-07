@@ -1,8 +1,7 @@
 var express = require('express');
 var app = express();
 var session = require('express-session');
-
-
+var morgan      = require('morgan');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
 
@@ -18,15 +17,20 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+app.use(morgan('dev'));
  
 /** API */
 var apiRoutes = express.Router(); 
+
+apiRoutes.get('/', function(req, res) {
+    res.json({ message: 'Welcome to the coolest API on earth!' });
+});
 
 apiRoutes.post('/setup', function(req, res) {
     let bodyObj = req.body;
     let newUser = new User({ 
         name: bodyObj.name, 
-        password: bodyObj.password,
+        password: bodyObj.passwuord,
         admin: bodyObj.admin 
     });  
     newUser.save(function(err) {
@@ -34,7 +38,6 @@ apiRoutes.post('/setup', function(req, res) {
         res.json({ success: true });
     });
 });
-
 
 apiRoutes.post('/login', function(req, res) {
     User.findOne({ name: req.body.name }, function(err, user) { 
@@ -57,24 +60,20 @@ apiRoutes.post('/login', function(req, res) {
 });
 
 apiRoutes.use(function(req, res, next) {
-  if (req.session && req.session.user === "amy" && req.session.admin)
-    return next();
-  else
-    return res.sendStatus(401);
+    console.log(req);
+    if (req.session && req.session.user === "amy" && req.session.admin)
+        return next();
+    else
+        return res.sendStatus(401);
 });
  
-
-apiRoutes.get('/', function(req, res) {
-    res.json({ message: 'Welcome to the coolest API on earth!' });
-});
-
 apiRoutes.get('/users', function(req, res) {
     User.find({}, function(err, users) {
         res.json(users);
     });
 }); 
 
-apiRoutes.get('/logout', function (req, res) {
+apiRoutes.post('/logout', function (req, res) {
     req.session.destroy();
     res.json({message: 'Bye Bye'});
 });
